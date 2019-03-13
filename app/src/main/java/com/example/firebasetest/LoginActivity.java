@@ -1,12 +1,18 @@
 package com.example.firebasetest;
 
 import android.app.ProgressDialog;
+import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.text.TextUtils;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.TextView;
+import android.widget.Toast;
 
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
+import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 
@@ -104,11 +110,53 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
     }
 
     private void signIn(String email, String pwd) {
+        if(!validateForm()){
+            return;
+        }
+        showProgressDialog();
+        auth.signInWithEmailAndPassword(email,pwd)
+                .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
+                    @Override
+                    public void onComplete(@NonNull Task<AuthResult> task) {
+                        if(task.isSuccessful()){
+                            FirebaseUser user = auth.getCurrentUser();
+                            updateUI(user);
+                        }else{
+                            Toast.makeText(LoginActivity.this, "Authentication faild", Toast.LENGTH_SHORT).show();
+                            updateUI(null);
+                        }
+                        if(!task.isSuccessful()){
+                            statusTextView.setText(R.string.auth_failed);
+                        }
+                        hideProgressDialog();
+                    }
+                });
 
     }
 
-    private void signOut() {
+    private boolean validateForm() {
+        boolean valid = true;
 
+        String email = emailField.getText().toString();
+        if(TextUtils.isEmpty(email)){
+            emailField.setError("Required");
+            valid=false;
+        }else{
+            emailField.setError(null);
+        }
+        String password = passwordField.getText().toString();
+        if(TextUtils.isEmpty(password)){
+            passwordField.setError("Required");
+            valid=false;
+        }else{
+            passwordField.setError(null);
+        }
+        return valid;
+    }
+
+    private void signOut() {
+        auth.signOut();
+        updateUI(null);
     }
 
     private void sendEmailVerification() {

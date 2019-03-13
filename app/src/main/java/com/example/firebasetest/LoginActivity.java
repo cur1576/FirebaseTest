@@ -106,6 +106,25 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
     }
 
     private void creatAccount(String email, String pwd) {
+        if(!validateForm()){
+            return;
+        }
+        showProgressDialog();
+        auth.createUserWithEmailAndPassword(email,pwd)
+        .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
+            @Override
+            public void onComplete(@NonNull Task<AuthResult> task) {
+                if(task.isSuccessful()){
+                    FirebaseUser user = auth.getCurrentUser();
+                    updateUI(user);
+                }else{
+                    Toast.makeText(LoginActivity.this, "Authentication faild", Toast.LENGTH_SHORT).show();
+                    updateUI(null);
+                }
+
+                hideProgressDialog();
+            }
+        });
 
     }
 

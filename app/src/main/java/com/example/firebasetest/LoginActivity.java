@@ -179,6 +179,20 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
     }
 
     private void sendEmailVerification() {
-
+        findViewById(R.id.verifyEmailButton).setEnabled(false);
+        final FirebaseUser user = auth.getCurrentUser();
+        user.sendEmailVerification()
+                .addOnCompleteListener(this, new OnCompleteListener<Void>() {
+                    @Override
+                    public void onComplete(@NonNull Task<Void> task) {
+                        findViewById(R.id.verifyEmailButton).setEnabled(true);
+                        if(task.isSuccessful()){
+                            Toast.makeText(LoginActivity.this, "Verification mail sent to " +
+                                    user.getEmail(), Toast.LENGTH_SHORT).show();
+                        }else{
+                            Toast.makeText(LoginActivity.this, "Faild to send verification email", Toast.LENGTH_SHORT).show();
+                        }
+                    }
+                });
     }
 }

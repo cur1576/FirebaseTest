@@ -89,7 +89,6 @@ public class MainActivity extends AppCompatActivity {
 
     public void send(View view) {
         Message message = new Message(user.getText().toString(),input.getText().toString());
-//        childReference = reference.child("message").push();
         childReference = reference.push();
         childReference.setValue(message);
     }

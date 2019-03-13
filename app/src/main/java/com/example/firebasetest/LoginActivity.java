@@ -1,5 +1,6 @@
 package com.example.firebasetest;
 
+import android.app.ProgressDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
@@ -14,6 +15,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
     private FirebaseAuth auth;
     private TextView statusTextView, detailTextView;
     private EditText emailField, passwordField;
+    private ProgressDialog progressDialog;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -41,7 +43,41 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
     }
 
     private void updateUI(FirebaseUser currentUser) {
+        hideProgressDialog();
+        if(currentUser != null) {
+            statusTextView.setText(getString(R.string.emailpassword_status_fmt,
+                    currentUser.getEmail(), currentUser.isEmailVerified()));
 
+            detailTextView.setText(getString(R.string.firebaseui_status_fmt, currentUser.getUid()));
+
+            findViewById(R.id.emailPasswordButtons).setVisibility(View.GONE);
+            findViewById(R.id.emailPasswordFields).setVisibility(View.GONE);
+            findViewById(R.id.signedInButtons).setVisibility(View.VISIBLE);
+
+            findViewById(R.id.verifyEmailButton).setEnabled(!currentUser.isEmailVerified());
+        }else{
+            statusTextView.setText(R.string.signed_out);
+            detailTextView.setText(null);
+
+            findViewById(R.id.emailPasswordButtons).setVisibility(View.VISIBLE);
+            findViewById(R.id.emailPasswordFields).setVisibility(View.VISIBLE);
+            findViewById(R.id.signedInButtons).setVisibility(View.GONE);
+        }
+    }
+
+    public void showProgressDialog(){
+        if(progressDialog==null){
+            progressDialog = new ProgressDialog(this);
+            progressDialog.setMessage(getString(R.string.loading));
+            progressDialog.setIndeterminate(true);
+        }
+        progressDialog.show();
+    }
+
+    public void hideProgressDialog(){
+        if(progressDialog!=null && progressDialog.isShowing()){
+            progressDialog.dismiss();
+        }
     }
 
     @Override

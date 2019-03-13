@@ -88,7 +88,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
 
     @Override
     public void onClick(View v) {
-        switch (detailTextView.getId()) {
+        switch (v.getId()) {
             case R.id.emailCreateAccountButton:
                 creatAccount(emailField.getText().toString(), passwordField.getText().toString());
                 break;

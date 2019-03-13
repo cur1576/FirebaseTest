@@ -16,29 +16,35 @@ import com.google.firebase.database.ValueEventListener;
 
 public class MainActivity extends AppCompatActivity {
 
-    EditText input;
+    EditText input, user;
     TextView output;
 
     FirebaseDatabase database;
     DatabaseReference reference;
+    DatabaseReference childReference;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         input = findViewById(R.id.input);
+        user = findViewById(R.id.user);
         output = findViewById(R.id.output);
         output.setText("");
+        Message fromServer = new Message();
+
 
         database = FirebaseDatabase.getInstance();
-        reference = database.getReference("message");
+        reference = database.getReference("messages");
+        childReference = reference.child("message");
+
 
         reference.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                String value = dataSnapshot.getValue(String.class);
+                Message value = dataSnapshot.getValue(Message.class);
                 if(value!=null){
-                    output.setText(value);
+                    output.setText(value.getUser() + ": " + value.getText());
                 }
             }
 
@@ -50,6 +56,8 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void send(View view) {
-        reference.setValue(input.getText().toString());
+        Message message = new Message(user.getText().toString(),input.getText().toString());
+        childReference = reference.child("message").push();
+        childReference.setValue(message);
     }
 }

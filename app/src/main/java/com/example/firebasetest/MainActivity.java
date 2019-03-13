@@ -36,7 +36,7 @@ public class MainActivity extends AppCompatActivity {
 
         database = FirebaseDatabase.getInstance();
         reference = database.getReference("messages");
-        childReference = reference.child("message");
+//        childReference = reference.child("message");
 
 
         reference.addValueEventListener(new ValueEventListener() {

@@ -110,7 +110,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
 
     private void updateUI(FirebaseUser currentUser) {
         hideProgressDialog();
-
+        Log.d("From ", "updateUI: " + fromChat);
         if(currentUser != null) {
             if(currentUser.isEmailVerified() && !fromChat){
                 Intent intent = new Intent(this,ChatActivity.class);

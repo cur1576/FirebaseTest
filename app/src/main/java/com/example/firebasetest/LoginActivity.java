@@ -203,6 +203,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
         if(!validateForm()){
             return;
         }
+        fromChat = false;
         showProgressDialog();
         auth.signInWithEmailAndPassword(email,pwd)
                 .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {

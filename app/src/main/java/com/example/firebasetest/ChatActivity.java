@@ -4,23 +4,28 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.TextView;
-import android.widget.Toast;
 
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.ValueEventListener;
 
 public class ChatActivity extends AppCompatActivity {
 
-    EditText input, user;
+    EditText input, et_user;
     TextView output;
 
+    FirebaseAuth auth;
+    FirebaseUser user;
     FirebaseDatabase database;
     DatabaseReference reference;
     DatabaseReference childReference;
@@ -30,13 +35,15 @@ public class ChatActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         input = findViewById(R.id.input);
-        user = findViewById(R.id.user);
+        et_user = findViewById(R.id.user);
         output = findViewById(R.id.output);
         output.setText("");
         Message fromServer = new Message();
 
-
         database = FirebaseDatabase.getInstance();
+        auth = FirebaseAuth.getInstance();
+        user = auth.getCurrentUser();
+        et_user.setText(user.getEmail());
         reference = database.getReference("messages");
 //        childReference = reference.child("message");
 
@@ -87,8 +94,24 @@ public class ChatActivity extends AppCompatActivity {
         });
     }
 
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.menu_main,menu);
+        return super.onCreateOptionsMenu(menu);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()){
+            case R.id.logout:
+                auth.signOut();
+                return true;
+        }
+        return super.onOptionsItemSelected(item);
+    }
+
     public void send(View view) {
-        Message message = new Message(user.getText().toString(),input.getText().toString());
+        Message message = new Message(et_user.getText().toString(),input.getText().toString());
         childReference = reference.push();
         childReference.setValue(message);
     }

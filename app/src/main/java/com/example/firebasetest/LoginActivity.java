@@ -1,10 +1,14 @@
 package com.example.firebasetest;
 
 import android.app.ProgressDialog;
+import android.content.Intent;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.text.TextUtils;
+import android.util.Log;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.TextView;
@@ -22,11 +26,19 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
     private TextView statusTextView, detailTextView;
     private EditText emailField, passwordField;
     private ProgressDialog progressDialog;
+    private boolean fromChat;
+    private Menu menu;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
+
+        if(savedInstanceState == null){
+            fromChat = false;
+        }else {
+            fromChat = savedInstanceState.getBoolean("fromChat");
+        }
 
         statusTextView = findViewById(R.id.status);
         detailTextView = findViewById(R.id.detail);
@@ -42,18 +54,75 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
     }
 
     @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putBoolean("fromChat", fromChat);
+    }
+
+    @Override
     protected void onStart() {
         super.onStart();
         FirebaseUser currentUser = auth.getCurrentUser();
-        updateUI(currentUser);
+
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        updateUI(auth.getCurrentUser());
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        super.onCreateOptionsMenu(menu);
+        getMenuInflater().inflate(R.menu.menu_login,menu);
+        this.menu = menu;
+        return true;
+    }
+
+//    @Override
+//    public boolean onPrepareOptionsMenu(Menu menu) {
+//        if(auth.getCurrentUser() == null) {
+//            menu.findItem(R.id.toChat).setEnabled(false);
+//        }else {
+//            menu.findItem(R.id.toChat).setEnabled(true);
+//        }
+//        return true;
+//    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()){
+            case R.id.toChat:
+                Log.d("From Chat", "onOptionsItemSelected: " + fromChat);
+                FirebaseUser currentUser = auth.getCurrentUser();
+                if(currentUser != null) {
+                    if (currentUser.isEmailVerified() && !fromChat) {
+                        Intent intent = new Intent(this, ChatActivity.class);
+                        fromChat = true;
+                        startActivity(intent);
+                    }
+                }
+                return true;
+        }
+        return super.onOptionsItemSelected(item);
     }
 
     private void updateUI(FirebaseUser currentUser) {
         hideProgressDialog();
+
         if(currentUser != null) {
+            if(currentUser.isEmailVerified() && !fromChat){
+                Intent intent = new Intent(this,ChatActivity.class);
+                fromChat=true;
+                startActivity(intent);
+            }else {
+                fromChat=false;
+            }
             statusTextView.setText(getString(R.string.emailpassword_status_fmt,
                     currentUser.getEmail(), currentUser.isEmailVerified()));
-
+            if(menu != null)
+                 menu.findItem(R.id.toChat).setVisible(true);
             detailTextView.setText(getString(R.string.firebaseui_status_fmt, currentUser.getUid()));
 
             findViewById(R.id.emailPasswordButtons).setVisibility(View.GONE);
@@ -62,9 +131,11 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
 
             findViewById(R.id.verifyEmailButton).setEnabled(!currentUser.isEmailVerified());
         }else{
+
             statusTextView.setText(R.string.signed_out);
             detailTextView.setText(null);
-
+            if(menu!=null)
+                menu.findItem(R.id.toChat).setVisible(false);
             findViewById(R.id.emailPasswordButtons).setVisibility(View.VISIBLE);
             findViewById(R.id.emailPasswordFields).setVisibility(View.VISIBLE);
             findViewById(R.id.signedInButtons).setVisibility(View.GONE);

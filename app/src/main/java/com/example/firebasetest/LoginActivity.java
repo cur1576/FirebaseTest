@@ -62,7 +62,6 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
     @Override
     protected void onStart() {
         super.onStart();
-        FirebaseUser currentUser = auth.getCurrentUser();
 
     }
 
@@ -77,6 +76,9 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
         super.onCreateOptionsMenu(menu);
         getMenuInflater().inflate(R.menu.menu_login,menu);
         this.menu = menu;
+        if(auth.getCurrentUser()==null){
+            menu.findItem(R.id.toChat).setVisible(false);
+        }
         return true;
     }
 

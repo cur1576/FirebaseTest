@@ -122,7 +122,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
             statusTextView.setText(getString(R.string.emailpassword_status_fmt,
                     currentUser.getEmail(), currentUser.isEmailVerified()));
             if(menu != null)
-                 menu.findItem(R.id.toChat).setVisible(true);
+                menu.findItem(R.id.toChat).setVisible(true);
             detailTextView.setText(getString(R.string.firebaseui_status_fmt, currentUser.getUid()));
 
             findViewById(R.id.emailPasswordButtons).setVisibility(View.GONE);

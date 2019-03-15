@@ -100,7 +100,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
                 FirebaseUser currentUser = auth.getCurrentUser();
                 if(currentUser != null) {
                     if (currentUser.isEmailVerified() && !fromChat) {
-                        Intent intent = new Intent(this, ChatActivity.class);
+                        Intent intent = new Intent(this, SelectChatWithActivity.class);
                         fromChat = true;
                         startActivity(intent);
                     }
@@ -115,7 +115,8 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
         Log.d("From ", "updateUI: " + fromChat);
         if(currentUser != null) {
             if(currentUser.isEmailVerified() && !fromChat){
-                Intent intent = new Intent(this,ChatActivity.class);
+                Intent intent = new Intent(this,SelectChatWithActivity.class);
+
                 fromChat=true;
                 startActivity(intent);
             }else {

@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string-array name="chat_user">
+        <item>cur1576@gmx.de</item>
+        <item>cur1576.test@gmail.com</item>
+    </string-array>
+</resources>

@@ -55,10 +55,11 @@ public class ChatActivity extends AppCompatActivity {
         scrollView = findViewById(R.id.scrollView);
         messageArea = findViewById(R.id.messageArea);
         sendButton = findViewById(R.id.sendButton);
-
+        auth = FirebaseAuth.getInstance();
         username = auth.getCurrentUser().getEmail();
         chatWith = getIntent().getStringExtra("chatWith");
-
+        username = username.replace(".","_");
+        chatWith = chatWith.replace(".","_");
         database = FirebaseDatabase.getInstance();
 
         reference1 = database.getReference("messages/" + username + "_" + chatWith);
